@@ -1,26 +1,17 @@
-# Use Python as the base image
-FROM python:3.9
+# Use an official Python image
+FROM python:3.10
 
-# Install system dependencies including Tesseract OCR
-RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
-    libtesseract-dev \
-    libleptonica-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Install Tesseract OCR
+RUN apt-get update && apt-get install -y tesseract-ocr
 
-# Set environment variables for Tesseract
-ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
-ENV LANG C.UTF-8
+# Set the working directory
+WORKDIR /app
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy project files into the container
+# Copy the application files
 COPY . .
 
-# Expose the application port
-EXPOSE 5000
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Start the application
-CMD ["python", "app.py"]
+# Start the app
+CMD ["gunicorn", "app:app"]
