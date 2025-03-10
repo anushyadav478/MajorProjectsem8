@@ -1,23 +1,23 @@
-# Use Python 3.11
-FROM python:3.11
+# Use Python as the base image
+FROM python:3.9
 
-# Install system dependencies for Tesseract OCR
-RUN apt-get update && apt-get install -y tesseract-ocr libtesseract-dev tesseract-ocr-eng
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy project files into the container
-COPY . .
-
-# Copy requirements.txt separately to ensure proper installation
-COPY requirements.txt .
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libtesseract-dev
 
 # Install Python dependencies
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port for the application
+# Set environment variables
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+
+# Copy project files
+COPY . .
+
+# Expose port
 EXPOSE 5000
 
-# Run the Flask app using Gunicorn
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
+# Start application
+CMD ["python", "app.py"]
