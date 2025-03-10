@@ -404,12 +404,19 @@ def upload_image():
             if not cleaned_text:
                 return jsonify({"error": "No text found in the image"}), 400
 
+            # conn = mysql.connector.connect(
+            #     host="localhost",
+            #     user="root",
+            #     password="Yadav@123",
+            #     database="ingredient_db"
+            # )
             conn = mysql.connector.connect(
-                host="localhost",
+                host="shortline.proxy.rlwy.net",
+                port=59867,
                 user="root",
-                password="Yadav@123",
+                password="SaGzejNBHlXVTYLghHCWuaErbkwwCvba",
                 database="ingredient_db"
-            )
+              )
             cursor = conn.cursor()
 
             ingredients = [item.strip() for item in cleaned_text.split(",")]
