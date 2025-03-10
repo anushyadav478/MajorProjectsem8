@@ -1,6 +1,4 @@
-
-#!/bin/bash
-echo "Starting Render deployment..."
-pip install -r requirements.txt  # Install dependencies
-python app.py  # Run your application
-
+#!/usr/bin/env bash
+echo "Installing system dependencies..."
+apt-get update && apt-get install -y tesseract-ocr
+echo "Tesseract installed successfully!"
