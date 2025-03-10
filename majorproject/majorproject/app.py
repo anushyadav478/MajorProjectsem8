@@ -343,7 +343,7 @@
 
 
 from flask import Flask, request, jsonify, render_template
-from werkzeug.utils import secure_filename
+from urllib.parse import quote as url_quote
 import os
 import pytesseract
 from PIL import Image
