@@ -1,7 +1,6 @@
+
 #!/bin/bash
+echo "Starting Render deployment..."
+pip install -r requirements.txt  # Install dependencies
+python app.py  # Run your application
 
-# Install Tesseract OCR
-apt-get update && apt-get install -y tesseract-ocr
-
-# Run Gunicorn to start the app
-gunicorn majorproject.majorproject.app:app --bind 0.0.0.0:$PORT
