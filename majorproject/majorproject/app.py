@@ -341,7 +341,7 @@
 # final code of styling 
 
 
-
+from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, render_template
 from urllib.parse import quote as url_quote
 import os
@@ -389,7 +389,9 @@ def upload_image():
         return jsonify({"error": "No file part"}), 400
 
     file = request.files['image']
-    if file.filename == '':
+
+    # Ensure filename is not empty before using secure_filename
+    if not file.filename:
         return jsonify({"error": "No selected file"}), 400
 
     if file and allowed_file(file.filename):
@@ -404,19 +406,13 @@ def upload_image():
             if not cleaned_text:
                 return jsonify({"error": "No text found in the image"}), 400
 
-            # conn = mysql.connector.connect(
-            #     host="localhost",
-            #     user="root",
-            #     password="Yadav@123",
-            #     database="ingredient_db"
-            # )
             conn = mysql.connector.connect(
                 host="shortline.proxy.rlwy.net",
                 port=59867,
                 user="root",
                 password="SaGzejNBHlXVTYLghHCWuaErbkwwCvba",
                 database="ingredient_db"
-              )
+            )
             cursor = conn.cursor()
 
             ingredients = [item.strip() for item in cleaned_text.split(",")]
@@ -435,7 +431,6 @@ def upload_image():
             cursor.close()
             conn.close()
 
-            # Pass extracted text and results to result.html
             return render_template("result.html", extracted_text=extracted_text, results=results)
 
         except Exception as e:
@@ -443,6 +438,7 @@ def upload_image():
             return jsonify({"error": f"An error occurred while processing your request: {e}"}), 500
 
     return jsonify({"error": "Invalid file format"}), 400
+
 
 
 
