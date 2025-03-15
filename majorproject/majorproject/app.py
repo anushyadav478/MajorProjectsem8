@@ -458,6 +458,11 @@ from PIL import Image
 import mysql.connector
 import logging
 import shutil
+import pytesseract
+
+# Set the Tesseract path manually
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 app = Flask(__name__)
 
