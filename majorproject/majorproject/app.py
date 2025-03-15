@@ -449,6 +449,7 @@
 
 
 
+
 from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, render_template
 from urllib.parse import quote as url_quote
@@ -458,25 +459,17 @@ from PIL import Image
 import mysql.connector
 import logging
 import shutil
-import pytesseract
-
-# Set the Tesseract path manually
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
 
 app = Flask(__name__)
-
-# ✅ Fix Tesseract path dynamically (works on Windows, Linux, and Render)
-if shutil.which("tesseract"):
-    pytesseract.pytesseract.tesseract_cmd = shutil.which("tesseract")
-else:
-    raise FileNotFoundError("❌ Tesseract is not installed. Install it before running the app.")
 
 # Setup paths and allowed file types
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# Set the correct path for Tesseract (ensure it's installed)
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # Logging setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -493,12 +486,13 @@ def home():
     except Exception as e:
         logging.error(f"Error serving index page: {e}")
         return "Error: Unable to load the index page.", 500
-
 @app.route('/index')
 def index():
     return render_template('index.html')
 
 # Handle image upload and processing
+
+
 @app.route('/upload', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
@@ -506,6 +500,7 @@ def upload_image():
 
     file = request.files['image']
 
+    # Ensure filename is not empty before using secure_filename
     if not file.filename:
         return jsonify({"error": "No selected file"}), 400
 
@@ -521,13 +516,19 @@ def upload_image():
             if not cleaned_text:
                 return jsonify({"error": "No text found in the image"}), 400
 
+            # conn = mysql.connector.connect(
+            #     host="shortline.proxy.rlwy.net",
+            #     port=59867,
+            #     user="root",
+            #     password="SaGzejNBHlXVTYLghHCWuaErbkwwCvba",
+            #     database="ingredient_db"
+            # )
             conn = mysql.connector.connect(
-                host="shortline.proxy.rlwy.net",
-                port=59867,
-                user="root",
-                password="SaGzejNBHlXVTYLghHCWuaErbkwwCvba",
-                database="ingredient_db"
-            )
+                     host="localhost",
+                     user="root",
+                     password="Yadav@123",  # Replace with YOUR local password
+                     database="ingredient_db"  # Replace with YOUR local database name
+                   )
             cursor = conn.cursor()
 
             ingredients = [item.strip() for item in cleaned_text.split(",")]
@@ -554,8 +555,13 @@ def upload_image():
 
     return jsonify({"error": "Invalid file format"}), 400
 
+
+
+
 # Run the Flask application
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 
 
